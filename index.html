@@ -597,6 +597,10 @@
         .cursor-pill {
           display: none;
         }
+
+        .hero-card {
+          touch-action: auto;
+        }
       }
 
       @media (min-width: 720px) {
@@ -982,6 +986,7 @@
         let moveY = 0;
 
         item.addEventListener('pointerdown', (event) => {
+          if (item.classList.contains('hero-card') && matchMedia('(pointer: coarse)').matches) return;
           isDown = true;
           didDrag = false;
           startX = event.clientX;
