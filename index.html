@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0d0e;
+        --paper: #f3f0e8;
+        --ink: #17191a;
+        --muted: #a9b1b4;
+        --cyan: #19bdd3;
+        --yellow: #f5cd35;
+        --pink: #d8489a;
+        --gap: clamp(14px, 4vw, 28px);
+        --radius: 18px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        background: linear-gradient(145deg, #080909 0%, #111619 56%, #070808 100%);
+        color: var(--paper);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      body::before {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        content: "";
+        background-image:
+          linear-gradient(rgba(255, 255, 255, .018) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, .018) 1px, transparent 1px);
+        background-size: 36px 36px;
+        -webkit-mask-image: linear-gradient(to bottom, #000, transparent 80%);
+        mask-image: linear-gradient(to bottom, #000, transparent 80%);
+      }
+
+      img,
+      video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+
+      button {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        font: inherit;
+      }
+
+      .page {
+        width: min(100%, 1680px);
+        margin: 0 auto;
+        padding: 14px 14px 44px;
+      }
+
+      .hero {
+        display: grid;
+        min-height: 100svh;
+        align-items: center;
+        padding: 8px 0 28px;
+      }
+
+      .hero-stack {
+        position: relative;
+        display: grid;
+        min-height: min(116vw, 660px);
+        place-items: center;
+        perspective: 1100px;
+      }
+
+      .hero-card {
+        position: relative;
+        z-index: 2;
+        width: min(82vw, 420px);
+        aspect-ratio: 4 / 5;
+        overflow: hidden;
+        border-radius: 28px;
+        box-shadow: 0 32px 90px rgba(0, 0, 0, .44);
+        transform: rotate(-3deg) translateZ(0);
+        animation: float-main 8s ease-in-out infinite;
+        touch-action: none;
+      }
+
+      .float-card,
+      .chip {
+        position: absolute;
+        z-index: 4;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, .13);
+        box-shadow: 0 24px 70px rgba(0, 0, 0, .36);
+        touch-action: none;
+      }
+
+      .hero-stack .is-dragging {
+        animation-play-state: paused;
+        cursor: grabbing;
+      }
+
+      .float-card {
+        width: min(44vw, 240px);
+        aspect-ratio: 1;
+        border-radius: 22px;
+      }
+
+      .float-card.one {
+        top: 1%;
+        right: -10%;
+        width: min(32vw, 170px);
+        transform: rotate(9deg);
+        animation: float-a 7s ease-in-out infinite;
+      }
+
+      .float-card.two {
+        bottom: 2%;
+        left: -10%;
+        width: min(38vw, 220px);
+        aspect-ratio: 4 / 3;
+        border-radius: 18px;
+        transform: rotate(-10deg);
+        animation: float-b 9s ease-in-out infinite;
+      }
+
+      .chip {
+        right: -2%;
+        bottom: 6%;
+        width: min(18vw, 96px);
+        aspect-ratio: 1 / 1.28;
+        border-radius: 16px;
+        transform: rotate(7deg);
+        animation: float-c 6.5s ease-in-out infinite;
+      }
+
+      .rail {
+        display: grid;
+        grid-auto-columns: 100%;
+        grid-auto-flow: column;
+        gap: 12px;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        padding: 4px 0 32px;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        cursor: grab;
+        user-select: none;
+      }
+
+      .rail.is-dragging {
+        cursor: grabbing;
+        scroll-snap-type: none;
+      }
+
+      .rail::-webkit-scrollbar {
+        display: none;
+      }
+
+      .rail-card {
+        position: relative;
+        aspect-ratio: 3 / 4;
+        overflow: hidden;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, .07);
+        scroll-snap-align: start;
+        transform: translateY(18px);
+        opacity: 0;
+        transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .2, 1);
+      }
+
+      .rail-card:nth-child(even) {
+        aspect-ratio: 4 / 5;
+      }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--gap);
+      }
+
+      .work {
+        position: relative;
+        min-height: 250px;
+        overflow: hidden;
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, .07);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+        transform: translateY(30px) scale(.985);
+        opacity: 0;
+        transition:
+          opacity .8s ease,
+          transform .8s cubic-bezier(.2, .8, .2, 1),
+          border-radius .35s ease;
+        touch-action: pan-y;
+      }
+
+      .work:active,
+      .rail-card:active {
+        transform: scale(.975);
+      }
+
+      .work img,
+      .rail-card img,
+      .hero-card img {
+        transition: transform .75s cubic-bezier(.2, .8, .2, 1), filter .75s ease;
+      }
+
+      .work:hover img,
+      .rail-card:hover img,
+      .hero-card:hover img {
+        transform: scale(1.035);
+      }
+
+      .work.tall {
+        aspect-ratio: 3 / 4.25;
+      }
+
+      .work.square {
+        aspect-ratio: 1;
+      }
+
+      .work.wide {
+        aspect-ratio: 16 / 10;
+      }
+
+      .work.poster {
+        aspect-ratio: 4 / 5.7;
+      }
+
+      .work.video {
+        aspect-ratio: 9 / 16;
+      }
+
+      .reveal.is-visible {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      .work:nth-child(3n + 1).is-visible {
+        transition-delay: .04s;
+      }
+
+      .work:nth-child(3n + 2).is-visible {
+        transition-delay: .1s;
+      }
+
+      .work:nth-child(3n + 3).is-visible {
+        transition-delay: .16s;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: grid;
+        place-items: center;
+        padding: 18px;
+        background: rgba(5, 6, 7, .9);
+        backdrop-filter: blur(22px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .24s ease;
+      }
+
+      .modal.is-open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal img {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        max-height: 88svh;
+        border-radius: 16px;
+        object-fit: contain;
+        box-shadow: 0 34px 120px rgba(0, 0, 0, .58);
+        transform: scale(.96);
+        transition: transform .24s ease;
+        cursor: grab;
+        touch-action: none;
+      }
+
+      .modal.is-open img {
+        transform: scale(1);
+      }
+
+      .modal.is-dragging img {
+        cursor: grabbing;
+        transition: none;
+      }
+
+      .close {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .1);
+        backdrop-filter: blur(12px);
+      }
+
+      .close::before,
+      .close::after {
+        position: absolute;
+        top: 21px;
+        left: 12px;
+        width: 20px;
+        height: 2px;
+        border-radius: 99px;
+        content: "";
+        background: var(--paper);
+      }
+
+      .close::before {
+        transform: rotate(45deg);
+      }
+
+      .close::after {
+        transform: rotate(-45deg);
+      }
+
+      @keyframes float-main {
+        0%, 100% { transform: rotate(-3deg) translate3d(0, 0, 0); }
+        50% { transform: rotate(-1deg) translate3d(0, -14px, 0); }
+      }
+
+      @keyframes float-a {
+        0%, 100% { transform: rotate(9deg) translate3d(0, 0, 0); }
+        50% { transform: rotate(13deg) translate3d(-8px, 12px, 0); }
+      }
+
+      @keyframes float-b {
+        0%, 100% { transform: rotate(-10deg) translate3d(0, 0, 0); }
+        50% { transform: rotate(-7deg) translate3d(10px, -10px, 0); }
+      }
+
+      @keyframes float-c {
+        0%, 100% { transform: rotate(7deg) translate3d(0, 0, 0); }
+        50% { transform: rotate(3deg) translate3d(0, 9px, 0); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: .001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: .001ms !important;
+        }
+      }
+
+      @media (min-width: 720px) {
+        .page {
+          padding: 18px 24px 72px;
+        }
+
+        .hero {
+          min-height: 78svh;
+        }
+
+        .hero-stack {
+          min-height: 720px;
+        }
+
+        .hero-card {
+          width: min(43vw, 560px);
+          aspect-ratio: 5 / 6;
+          border-radius: 34px;
+        }
+
+        .float-card.one {
+          right: 16%;
+          width: min(24vw, 320px);
+        }
+
+        .float-card.two {
+          left: 13%;
+          width: min(30vw, 430px);
+        }
+
+        .chip {
+          right: 24%;
+          width: min(13vw, 170px);
+        }
+
+        .rail {
+          display: none;
+        }
+
+        .gallery {
+          grid-template-columns: repeat(6, 1fr);
+          align-items: start;
+        }
+
+        .work {
+          grid-column: span 3;
+          border-radius: 22px;
+        }
+
+        .work.square {
+          grid-column: span 2;
+        }
+
+        .work.wide {
+          grid-column: span 4;
+        }
+
+        .work.tall,
+        .work.video,
+        .work.poster {
+          grid-column: span 2;
+        }
+      }
+
+      @media (min-width: 1180px) {
+        .page {
+          padding-inline: 42px;
+        }
+
+        .hero {
+          min-height: 86svh;
+        }
+
+        .gallery {
+          grid-template-columns: repeat(12, 1fr);
+        }
+
+        .work {
+          grid-column: span 4;
+        }
+
+        .work.square {
+          grid-column: span 3;
+        }
+
+        .work.wide {
+          grid-column: span 6;
+        }
+
+        .work.tall,
+        .work.video,
+        .work.poster {
+          grid-column: span 3;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero" aria-label="portfolio">
+        <div class="hero-stack" data-tilt>
+          <button class="hero-card" type="button" data-full="assets/works/08-menu.jpg" aria-label="open">
+            <img src="assets/works/08-menu.jpg" alt="" loading="eager">
+          </button>
+          <button class="float-card one" type="button" data-full="assets/works/01-cubes.jpg" aria-label="open">
+            <img src="assets/works/01-cubes.jpg" alt="" loading="eager">
+          </button>
+          <button class="float-card two" type="button" data-full="assets/works/03-notebook-wide.jpg" aria-label="open">
+            <img src="assets/works/03-notebook-wide.jpg" alt="" loading="lazy">
+          </button>
+          <button class="chip" type="button" data-full="assets/works/02-tumbler.jpg" aria-label="open">
+            <img src="assets/works/02-tumbler.jpg" alt="" loading="lazy">
+          </button>
+        </div>
+      </section>
+
+      <section class="rail" aria-label="featured">
+        <button class="rail-card reveal" type="button" data-full="assets/works/05-card-blue.jpg" aria-label="open">
+          <img src="assets/works/05-card-blue.jpg" alt="" loading="lazy">
+        </button>
+        <button class="rail-card reveal" type="button" data-full="assets/works/10-a4.jpg" aria-label="open">
+          <img src="assets/works/10-a4.jpg" alt="" loading="lazy">
+        </button>
+        <button class="rail-card reveal" type="button" data-full="assets/works/14-poster-person.jpg" aria-label="open">
+          <img src="assets/works/14-poster-person.jpg" alt="" loading="lazy">
+        </button>
+        <button class="rail-card reveal" type="button" data-full="assets/works/04-notebook-silver.jpg" aria-label="open">
+          <img src="assets/works/04-notebook-silver.jpg" alt="" loading="lazy">
+        </button>
+      </section>
+
+      <section class="gallery" aria-label="works">
+        <div class="work video reveal">
+          <video src="polygraphy/Vizitki-Anim2.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        </div>
+        <button class="work square reveal" type="button" data-full="assets/works/12-stand.jpg" aria-label="open">
+          <img src="assets/works/12-stand.jpg" alt="" loading="lazy">
+        </button>
+        <button class="work tall reveal" type="button" data-full="assets/works/08-menu.jpg" aria-label="open">
+          <img src="assets/works/08-menu.jpg" alt="" loading="lazy">
+        </button>
+        <button class="work wide reveal" type="button" data-full="assets/works/06-calendar-open.jpg" aria-label="open">
+          <img src="assets/works/06-calendar-open.jpg" alt="" loading="lazy">
+        </button>
+        <button class="work poster reveal" type="button" data-full="assets/works/10-a4.jpg" aria-label="open">
+          <img src="assets/works/10-a4.jpg" alt="" loading="lazy">
+        </button>
+        <button class="work wide reveal" type="button" data-full="assets/works/07-certificate.jpg" aria-label="open">
+          <img src="assets/works/07-certificate.jpg" alt="" loading="lazy">
+        </button>
+        <button class="work tall reveal" type="button" data-full="assets/works/04-notebook-silver.jpg" aria-label="open">
+          <img src="assets/works/04-notebook-silver.jpg" alt="" loading="lazy">
+        </button>
+        <button class="work square reveal" type="button" data-full="assets/works/01-cubes.jpg" aria-label="open">
+          <img src="assets/works/01-cubes.jpg" alt="" loading="lazy">
+        </button>
+        <button class="work poster reveal" type="button" data-full="assets/works/09-poster.jpg" aria-label="open">
+          <img src="assets/works/09-poster.jpg" alt="" loading="lazy">
+        </button>
+        <button class="work wide reveal" type="button" data-full="assets/works/11-calendar-photo.jpg" aria-label="open">
+          <img src="assets/works/11-calendar-photo.jpg" alt="" loading="lazy">
+        </button>
+        <button class="work tall reveal" type="button" data-full="assets/works/13-photo.jpg" aria-label="open">
+          <img src="assets/works/13-photo.jpg" alt="" loading="lazy">
+        </button>
+        <button class="work poster reveal" type="button" data-full="assets/works/14-poster-person.jpg" aria-label="open">
+          <img src="assets/works/14-poster-person.jpg" alt="" loading="lazy">
+        </button>
+      </section>
+    </main>
+
+    <div class="modal" id="modal" aria-hidden="true">
+      <button class="close" type="button" aria-label="close"></button>
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="">
+    </div>
+
+    <script>
+      const modal = document.querySelector('#modal');
+      const modalImage = modal.querySelector('img');
+      const close = modal.querySelector('.close');
+      let suppressOpen = false;
+      let modalDrag = false;
+      let modalStartX = 0;
+      let modalStartY = 0;
+      let modalX = 0;
+      let modalY = 0;
+
+      document.querySelectorAll('[data-full]').forEach((item) => {
+        item.addEventListener('click', () => {
+          if (suppressOpen) return;
+          modalImage.src = item.dataset.full;
+          modalX = 0;
+          modalY = 0;
+          modalImage.style.transform = '';
+          modal.classList.add('is-open');
+          modal.setAttribute('aria-hidden', 'false');
+        });
+      });
+
+      const closeModal = () => {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        modalX = 0;
+        modalY = 0;
+        modalImage.style.transform = '';
+        setTimeout(() => {
+          if (!modal.classList.contains('is-open')) {
+            modalImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+          }
+        }, 260);
+      };
+
+      close.addEventListener('click', closeModal);
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) closeModal();
+      });
+      window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeModal();
+      });
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: .18 });
+
+      document.querySelectorAll('.reveal').forEach((item) => observer.observe(item));
+
+      document.querySelectorAll('.rail').forEach((rail) => {
+        let isDown = false;
+        let didDrag = false;
+        let startX = 0;
+        let scrollLeft = 0;
+
+        rail.addEventListener('pointerdown', (event) => {
+          isDown = true;
+          didDrag = false;
+          startX = event.clientX;
+          scrollLeft = rail.scrollLeft;
+          rail.classList.add('is-dragging');
+          rail.setPointerCapture(event.pointerId);
+        });
+
+        rail.addEventListener('pointermove', (event) => {
+          if (!isDown) return;
+          if (Math.abs(event.clientX - startX) > 5) didDrag = true;
+          rail.scrollLeft = scrollLeft - (event.clientX - startX);
+        });
+
+        const stopDrag = () => {
+          if (didDrag) {
+            suppressOpen = true;
+            setTimeout(() => {
+              suppressOpen = false;
+            }, 140);
+          }
+          isDown = false;
+          rail.classList.remove('is-dragging');
+        };
+
+        rail.addEventListener('pointerup', stopDrag);
+        rail.addEventListener('pointercancel', stopDrag);
+        rail.addEventListener('pointerleave', stopDrag);
+      });
+
+      document.querySelectorAll('.hero-stack [data-full]').forEach((item) => {
+        let isDown = false;
+        let didDrag = false;
+        let startX = 0;
+        let startY = 0;
+        let baseX = 0;
+        let baseY = 0;
+        let moveX = 0;
+        let moveY = 0;
+
+        item.addEventListener('pointerdown', (event) => {
+          isDown = true;
+          didDrag = false;
+          startX = event.clientX;
+          startY = event.clientY;
+          baseX = moveX;
+          baseY = moveY;
+          item.classList.add('is-dragging');
+          item.setPointerCapture(event.pointerId);
+        });
+
+        item.addEventListener('pointermove', (event) => {
+          if (!isDown) return;
+          const dx = event.clientX - startX;
+          const dy = event.clientY - startY;
+          if (Math.hypot(dx, dy) > 5) didDrag = true;
+          moveX = baseX + dx;
+          moveY = baseY + dy;
+          item.style.translate = `${moveX}px ${moveY}px`;
+        });
+
+        const stopHeroDrag = () => {
+          if (didDrag) {
+            suppressOpen = true;
+            setTimeout(() => {
+              suppressOpen = false;
+            }, 140);
+          }
+          isDown = false;
+          item.classList.remove('is-dragging');
+        };
+
+        item.addEventListener('pointerup', stopHeroDrag);
+        item.addEventListener('pointercancel', stopHeroDrag);
+      });
+
+      modalImage.addEventListener('pointerdown', (event) => {
+        if (!modal.classList.contains('is-open')) return;
+        modalDrag = true;
+        modalStartX = event.clientX - modalX;
+        modalStartY = event.clientY - modalY;
+        modal.classList.add('is-dragging');
+        modalImage.setPointerCapture(event.pointerId);
+      });
+
+      modalImage.addEventListener('pointermove', (event) => {
+        if (!modalDrag) return;
+        modalX = event.clientX - modalStartX;
+        modalY = event.clientY - modalStartY;
+        modalImage.style.transform = `translate3d(${modalX}px, ${modalY}px, 0) scale(1)`;
+      });
+
+      const stopModalDrag = () => {
+        modalDrag = false;
+        modal.classList.remove('is-dragging');
+      };
+
+      modalImage.addEventListener('pointerup', stopModalDrag);
+      modalImage.addEventListener('pointercancel', stopModalDrag);
+
+      const stack = document.querySelector('[data-tilt]');
+      stack.addEventListener('pointermove', (event) => {
+        if (matchMedia('(pointer: coarse)').matches) return;
+        const rect = stack.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - .5;
+        const y = (event.clientY - rect.top) / rect.height - .5;
+        stack.style.transform = `rotateX(${y * -5}deg) rotateY(${x * 7}deg)`;
+      });
+      stack.addEventListener('pointerleave', () => {
+        stack.style.transform = '';
+      });
+    </script>
+  </body>
+</html>
