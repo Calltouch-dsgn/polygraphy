@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;750;800&family=Marck+Script&display=swap" rel="stylesheet">
     <style>
       :root {
         color-scheme: dark;
@@ -35,7 +38,7 @@
         overflow-x: hidden;
         background: linear-gradient(145deg, #080909 0%, #111619 56%, #070808 100%);
         color: var(--paper);
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: "Manrope", system-ui, sans-serif;
       }
 
       body::before {
@@ -78,6 +81,31 @@
         margin: 0 auto;
         overflow-x: hidden;
         padding: 14px 10px 44px;
+      }
+
+      .hello-mark {
+        position: absolute;
+        top: clamp(18px, 4vw, 34px);
+        left: 50%;
+        z-index: 8;
+        width: min(42vw, 220px);
+        height: auto;
+        overflow: visible;
+        pointer-events: none;
+        transform: translateX(-50%) rotate(-2deg);
+      }
+
+      .hello-mark text {
+        font-family: "Marck Script", "Manrope", system-ui, sans-serif;
+        font-size: 74px;
+        fill: rgba(255, 255, 255, 0);
+        stroke: #fff;
+        stroke-width: 1.7px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 560;
+        stroke-dashoffset: 560;
+        animation: hello-draw 2.2s .28s cubic-bezier(.7, 0, .2, 1) forwards, hello-fill .7s 1.9s ease forwards;
       }
 
       .hero {
@@ -282,6 +310,86 @@
 
       .work:nth-child(3n + 3).is-visible {
         transition-delay: .16s;
+      }
+
+      .cta {
+        display: grid;
+        gap: 12px;
+        padding: clamp(32px, 8vw, 76px) 0 10px;
+      }
+
+      .cta-link {
+        display: flex;
+        min-height: 68px;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        border-radius: 8px;
+        color: #fff;
+        font-size: clamp(18px, 5vw, 28px);
+        font-weight: 600;
+        line-height: 1;
+        text-decoration: none;
+        transition: transform .35s cubic-bezier(.2, .8, .2, 1), border-color .35s ease, background .35s ease;
+      }
+
+      .cta-link:hover {
+        transform: translateY(-3px);
+      }
+
+      .cta-link svg {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 auto;
+        transition: transform .38s cubic-bezier(.2, .8, .2, 1), opacity .24s ease;
+      }
+
+      .cta-link.primary:hover svg {
+        animation: telegram-fly 1.05s cubic-bezier(.45, 0, .2, 1) infinite;
+      }
+
+      .cta-link.secondary:hover svg {
+        animation: arrow-jump 1.05s cubic-bezier(.3, .8, .2, 1) infinite;
+      }
+
+      .cta-link.primary {
+        background: #24a1de;
+      }
+
+      .cta-link.primary:hover {
+        background: #35b7f2;
+      }
+
+      .cta-link.secondary {
+        border: 1px solid rgba(255, 255, 255, .68);
+        background: transparent;
+      }
+
+      .cta-link.secondary:hover {
+        border-color: #fff;
+        background: rgba(255, 255, 255, .06);
+      }
+
+      @keyframes telegram-fly {
+        0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+        54% { opacity: 0; transform: translate3d(12px, -12px, 0) scale(.58) rotate(8deg); }
+        55% { opacity: 0; transform: translate3d(-10px, 10px, 0) scale(.58) rotate(8deg); }
+        100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+      }
+
+      @keyframes arrow-jump {
+        0% { opacity: 1; transform: translate3d(0, 0, 0); }
+        42% { opacity: 0; transform: translate3d(10px, -10px, 0); }
+        43% { opacity: 0; transform: translate3d(-8px, 8px, 0); }
+        100% { opacity: 1; transform: translate3d(0, 0, 0); }
+      }
+
+      @keyframes hello-draw {
+        to { stroke-dashoffset: 0; }
+      }
+
+      @keyframes hello-fill {
+        to { fill: #fff; }
       }
 
       .modal {
@@ -555,6 +663,16 @@
         .work.poster {
           grid-column: span 2;
         }
+
+        .cta {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px;
+        }
+
+        .cta-link {
+          min-height: 82px;
+          border-radius: 14px;
+        }
       }
 
       @media (min-width: 1180px) {
@@ -664,6 +782,21 @@
         <button class="work poster reveal" type="button" data-full="assets/works/14-poster-person.jpg" data-cursor-text="ПЕРСОНАЛЬНЫЙ ПОСТЕР / РЕДАКТОРСКИЙ СТИЛЬ / ПЕЧАТЬ" aria-label="open">
           <img src="assets/works/14-poster-person.jpg" alt="" loading="lazy">
         </button>
+      </section>
+
+      <section class="cta" aria-label="contacts">
+        <a class="cta-link primary" href="https://t.me/okrivenko" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M21.9 4.1 18.6 20c-.25 1.12-.9 1.4-1.82.87l-5.02-3.7-2.42 2.33c-.27.27-.5.5-1.02.5l.36-5.12 9.32-8.42c.4-.36-.09-.56-.62-.2L5.86 13.5.9 11.95c-1.08-.34-1.1-1.08.23-1.6L20.5 2.88c.9-.34 1.68.2 1.4 1.22Z"/>
+          </svg>
+          <span>Обсудить проект</span>
+        </a>
+        <a class="cta-link secondary" href="https://krivenxter.github.io" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Перейти на сайт</span>
+        </a>
       </section>
     </main>
 
