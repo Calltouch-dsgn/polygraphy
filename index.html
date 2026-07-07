@@ -225,13 +225,17 @@
 
       .work img,
       .rail-card img,
-      .hero-card img {
+      .hero-card img,
+      .float-card img,
+      .chip img {
         transition: transform .75s cubic-bezier(.2, .8, .2, 1), filter .75s ease;
       }
 
       .work:hover img,
       .rail-card:hover img,
-      .hero-card:hover img {
+      .hero-card:hover img,
+      .float-card:hover img,
+      .chip:hover img {
         transform: scale(1.035);
       }
 
@@ -301,19 +305,109 @@
         box-shadow: 0 34px 120px rgba(0, 0, 0, .58);
         transform: scale(.96);
         transition: transform .24s ease;
-        cursor: grab;
-        touch-action: none;
+        cursor: zoom-out;
+        touch-action: auto;
       }
 
       .modal.is-open img {
         transform: scale(1);
       }
 
-      .modal.is-dragging img {
-        cursor: grabbing;
-        transition: none;
+      .cursor-pill {
+        --tilt-x: 0deg;
+        --tilt-y: 0deg;
+        --tilt-z: 0deg;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 90;
+        display: flex;
+        align-items: center;
+        width: 210px;
+        height: 40px;
+        overflow: hidden;
+        border-radius: 10px;
+        background: #fff;
+        color: #050505;
+        box-shadow: 0 16px 42px rgba(0, 0, 0, .28);
+        opacity: 0;
+        pointer-events: none;
+        transform: translate3d(-50%, -50%, 0) rotate(var(--tilt-z)) rotateX(var(--tilt-y)) rotateY(var(--tilt-x)) scale(.92);
+        transition: opacity .18s ease, transform .24s cubic-bezier(.2, .8, .2, 1);
+        transform-style: preserve-3d;
+        perspective: 420px;
       }
 
+      .cursor-pill.is-visible {
+        opacity: 1;
+        transform: translate3d(-50%, -50%, 0) rotate(var(--tilt-z)) rotateX(var(--tilt-y)) rotateY(var(--tilt-x)) scale(1);
+      }
+
+      .cursor-pill::before,
+      .cursor-pill::after {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        z-index: 2;
+        width: 46px;
+        content: "";
+        pointer-events: none;
+      }
+
+      .cursor-pill::before {
+        left: 0;
+        width: 64px;
+        background: linear-gradient(90deg, #fff 0%, #fff 44%, rgba(255, 255, 255, 0) 100%);
+      }
+
+      .cursor-pill::after {
+        right: 0;
+        background: linear-gradient(270deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+      }
+
+      .cursor-track {
+        display: inline-flex;
+        width: max-content;
+        padding-left: 48px;
+        animation: cursor-marquee 9s linear infinite;
+        white-space: nowrap;
+      }
+
+      .cursor-plus {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        z-index: 3;
+        width: 14px;
+        height: 14px;
+        pointer-events: none;
+        transform: translateY(-50%);
+      }
+
+      .cursor-plus::before,
+      .cursor-plus::after {
+        position: absolute;
+        inset: 50% auto auto 0;
+        width: 14px;
+        height: 3px;
+        border-radius: 99px;
+        content: "";
+        background: #050505;
+        transform: translateY(-50%);
+      }
+
+      .cursor-plus::after {
+        transform: translateY(-50%) rotate(90deg);
+      }
+
+      .cursor-track span {
+        padding-right: 28px;
+        font-size: 12px;
+        font-weight: 750;
+        letter-spacing: .045em;
+        line-height: 1;
+        text-transform: uppercase;
+      }
       .close {
         position: fixed;
         top: 16px;
@@ -365,6 +459,11 @@
         50% { transform: rotate(3deg) translate3d(0, 9px, 0); }
       }
 
+      @keyframes cursor-marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -373,6 +472,12 @@
           animation-duration: .001ms !important;
           animation-iteration-count: 1 !important;
           transition-duration: .001ms !important;
+        }
+      }
+
+      @media (pointer: coarse) {
+        .cursor-pill {
+          display: none;
         }
       }
 
@@ -476,75 +581,80 @@
     <main class="page">
       <section class="hero" aria-label="portfolio">
         <div class="hero-stack" data-tilt>
-          <button class="hero-card" type="button" data-full="assets/works/08-menu.jpg" aria-label="open">
+          <button class="hero-card" type="button" data-full="assets/works/08-menu.jpg" data-cursor-text="МЕНЮ / БАРНАЯ ПОЛИГРАФИЯ / МОКАП" aria-label="open">
             <img src="assets/works/08-menu.jpg" alt="" loading="eager">
           </button>
-          <button class="float-card one" type="button" data-full="assets/works/01-cubes.jpg" aria-label="open">
+          <button class="float-card one" type="button" data-full="assets/works/01-cubes.jpg" data-cursor-text="ИВЕНТ-КУБЫ / БРЕНД-ОБЪЕКТЫ / CALLDAY" aria-label="open">
             <img src="assets/works/01-cubes.jpg" alt="" loading="eager">
           </button>
-          <button class="float-card two" type="button" data-full="assets/works/03-notebook-wide.jpg" aria-label="open">
+          <button class="float-card two" type="button" data-full="assets/works/03-notebook-wide.jpg" data-cursor-text="БЛОКНОТ / КРАФТ-ОБЛОЖКА / ОФИСНАЯ ПЕЧАТЬ" aria-label="open">
             <img src="assets/works/03-notebook-wide.jpg" alt="" loading="lazy">
           </button>
-          <button class="chip" type="button" data-full="assets/works/02-tumbler.jpg" aria-label="open">
+          <button class="chip" type="button" data-full="assets/works/02-tumbler.jpg" data-cursor-text="МЕРЧ / ТЕРМОСТАКАН / ТЁМНАЯ СЕРИЯ" aria-label="open">
             <img src="assets/works/02-tumbler.jpg" alt="" loading="lazy">
           </button>
         </div>
       </section>
 
       <section class="rail" aria-label="featured">
-        <button class="rail-card reveal" type="button" data-full="assets/works/05-card-blue.jpg" aria-label="open">
+        <button class="rail-card reveal" type="button" data-full="assets/works/05-card-blue.jpg" data-cursor-text="ОТКРЫТКА / ГОЛУБАЯ СИСТЕМА / ПЕЧАТЬ" aria-label="open">
           <img src="assets/works/05-card-blue.jpg" alt="" loading="lazy">
         </button>
-        <button class="rail-card reveal" type="button" data-full="assets/works/10-a4.jpg" aria-label="open">
+        <button class="rail-card reveal" type="button" data-full="assets/works/10-a4.jpg" data-cursor-text="ПОСТЕР A4 / ВЁРСТКА / ГОТОВО К ПЕЧАТИ" aria-label="open">
           <img src="assets/works/10-a4.jpg" alt="" loading="lazy">
         </button>
-        <button class="rail-card reveal" type="button" data-full="assets/works/14-poster-person.jpg" aria-label="open">
+        <button class="rail-card reveal" type="button" data-full="assets/works/14-poster-person.jpg" data-cursor-text="ПЕРСОНАЛЬНЫЙ ПОСТЕР / РЕДАКТОРСКИЙ СТИЛЬ / ПЕЧАТЬ" aria-label="open">
           <img src="assets/works/14-poster-person.jpg" alt="" loading="lazy">
         </button>
-        <button class="rail-card reveal" type="button" data-full="assets/works/04-notebook-silver.jpg" aria-label="open">
+        <button class="rail-card reveal" type="button" data-full="assets/works/04-notebook-silver.jpg" data-cursor-text="СЕРЕБРЯНЫЙ БЛОКНОТ / ОБЛОЖКА / МОКАП" aria-label="open">
           <img src="assets/works/04-notebook-silver.jpg" alt="" loading="lazy">
         </button>
       </section>
 
       <section class="gallery" aria-label="works">
-        <div class="work video reveal">
+        <div class="work video reveal" data-cursor-text="ВИЗИТКИ / АНИМАЦИЯ / ПЕЧАТНЫЙ НАБОР">
           <video src="assets/works/Vizitki-Anim2.mp4" autoplay muted loop playsinline preload="metadata"></video>
         </div>
-        <button class="work square reveal" type="button" data-full="assets/works/12-stand.jpg" aria-label="open">
+        <button class="work square reveal" type="button" data-full="assets/works/12-stand.jpg" data-cursor-text="СТЕНД / ИВЕНТ-ПЕЧАТЬ / СЕРИЯ" aria-label="open">
           <img src="assets/works/12-stand.jpg" alt="" loading="lazy">
         </button>
-        <button class="work tall reveal" type="button" data-full="assets/works/08-menu.jpg" aria-label="open">
+        <button class="work tall reveal" type="button" data-full="assets/works/08-menu.jpg" data-cursor-text="МЕНЮ / БАРНАЯ ПОЛИГРАФИЯ / МОКАП" aria-label="open">
           <img src="assets/works/08-menu.jpg" alt="" loading="lazy">
         </button>
-        <button class="work wide reveal" type="button" data-full="assets/works/06-calendar-open.jpg" aria-label="open">
+        <button class="work wide reveal" type="button" data-full="assets/works/06-calendar-open.jpg" data-cursor-text="КАЛЕНДАРЬ / ДВЕ СТОРОНЫ / НАСТОЛЬНАЯ ПЕЧАТЬ" aria-label="open">
           <img src="assets/works/06-calendar-open.jpg" alt="" loading="lazy">
         </button>
-        <button class="work poster reveal" type="button" data-full="assets/works/10-a4.jpg" aria-label="open">
+        <button class="work poster reveal" type="button" data-full="assets/works/10-a4.jpg" data-cursor-text="ПОСТЕР A4 / ВЁРСТКА / ГОТОВО К ПЕЧАТИ" aria-label="open">
           <img src="assets/works/10-a4.jpg" alt="" loading="lazy">
         </button>
-        <button class="work wide reveal" type="button" data-full="assets/works/07-certificate.jpg" aria-label="open">
+        <button class="work wide reveal" type="button" data-full="assets/works/07-certificate.jpg" data-cursor-text="СЕРТИФИКАТ / МОКАП В РУКЕ / БРЕНД-ПЕЧАТЬ" aria-label="open">
           <img src="assets/works/07-certificate.jpg" alt="" loading="lazy">
         </button>
-        <button class="work tall reveal" type="button" data-full="assets/works/04-notebook-silver.jpg" aria-label="open">
+        <button class="work tall reveal" type="button" data-full="assets/works/04-notebook-silver.jpg" data-cursor-text="СЕРЕБРЯНЫЙ БЛОКНОТ / ОБЛОЖКА / МОКАП" aria-label="open">
           <img src="assets/works/04-notebook-silver.jpg" alt="" loading="lazy">
         </button>
-        <button class="work square reveal" type="button" data-full="assets/works/01-cubes.jpg" aria-label="open">
+        <button class="work square reveal" type="button" data-full="assets/works/01-cubes.jpg" data-cursor-text="ИВЕНТ-КУБЫ / БРЕНД-ОБЪЕКТЫ / CALLDAY" aria-label="open">
           <img src="assets/works/01-cubes.jpg" alt="" loading="lazy">
         </button>
-        <button class="work poster reveal" type="button" data-full="assets/works/09-poster.jpg" aria-label="open">
+        <button class="work poster reveal" type="button" data-full="assets/works/09-poster.jpg" data-cursor-text="ПОСТЕР / ВЕРТИКАЛЬНЫЙ ФОРМАТ / ПЕЧАТЬ" aria-label="open">
           <img src="assets/works/09-poster.jpg" alt="" loading="lazy">
         </button>
-        <button class="work wide reveal" type="button" data-full="assets/works/11-calendar-photo.jpg" aria-label="open">
+        <button class="work wide reveal" type="button" data-full="assets/works/11-calendar-photo.jpg" data-cursor-text="КАЛЕНДАРЬ / ФОТО МОКАП / 2020" aria-label="open">
           <img src="assets/works/11-calendar-photo.jpg" alt="" loading="lazy">
         </button>
-        <button class="work tall reveal" type="button" data-full="assets/works/13-photo.jpg" aria-label="open">
+        <button class="work tall reveal" type="button" data-full="assets/works/13-photo.jpg" data-cursor-text="ФОТО МОКАП / ДЕТАЛИ ПЕЧАТИ / БУМАГА" aria-label="open">
           <img src="assets/works/13-photo.jpg" alt="" loading="lazy">
         </button>
-        <button class="work poster reveal" type="button" data-full="assets/works/14-poster-person.jpg" aria-label="open">
+        <button class="work poster reveal" type="button" data-full="assets/works/14-poster-person.jpg" data-cursor-text="ПЕРСОНАЛЬНЫЙ ПОСТЕР / РЕДАКТОРСКИЙ СТИЛЬ / ПЕЧАТЬ" aria-label="open">
           <img src="assets/works/14-poster-person.jpg" alt="" loading="lazy">
         </button>
       </section>
     </main>
+
+    <div class="cursor-pill" aria-hidden="true">
+      <span class="cursor-plus"></span>
+      <div class="cursor-track"></div>
+    </div>
 
     <div class="modal" id="modal" aria-hidden="true">
       <button class="close" type="button" aria-label="close"></button>
@@ -556,19 +666,24 @@
       const modalImage = modal.querySelector('img');
       const close = modal.querySelector('.close');
       const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+      const cursorPill = document.querySelector('.cursor-pill');
+      const cursorTrack = cursorPill.querySelector('.cursor-track');
       let suppressOpen = false;
-      let modalDrag = false;
-      let modalStartX = 0;
-      let modalStartY = 0;
-      let modalX = 0;
-      let modalY = 0;
+      let cursorX = window.innerWidth / 2;
+      let cursorY = window.innerHeight / 2;
+      let targetX = cursorX;
+      let targetY = cursorY;
+      let previousTargetX = targetX;
+      let previousTargetY = targetY;
+      let tiltX = 0;
+      let tiltY = 0;
+      let tiltZ = 0;
+      let cursorActive = false;
 
       document.querySelectorAll('[data-full]').forEach((item) => {
         item.addEventListener('click', () => {
           if (suppressOpen) return;
           modalImage.src = item.dataset.full;
-          modalX = 0;
-          modalY = 0;
           modalImage.style.transform = '';
           modal.classList.add('is-open');
           modal.setAttribute('aria-hidden', 'false');
@@ -578,8 +693,6 @@
       const closeModal = () => {
         modal.classList.remove('is-open');
         modal.setAttribute('aria-hidden', 'true');
-        modalX = 0;
-        modalY = 0;
         modalImage.style.transform = '';
         setTimeout(() => {
           if (!modal.classList.contains('is-open')) {
@@ -589,6 +702,7 @@
       };
 
       close.addEventListener('click', closeModal);
+      modalImage.addEventListener('click', closeModal);
       modal.addEventListener('click', (event) => {
         if (event.target === modal) closeModal();
       });
@@ -606,6 +720,64 @@
       }, { threshold: .18 });
 
       document.querySelectorAll('.reveal').forEach((item) => observer.observe(item));
+
+      const setCursorText = (text) => {
+        cursorTrack.replaceChildren();
+        for (let i = 0; i < 6; i += 1) {
+          const item = document.createElement('span');
+          item.textContent = text;
+          cursorTrack.append(item);
+        }
+      };
+
+      const showCursorPill = (event, text) => {
+        if (!matchMedia('(pointer: fine)').matches) return;
+        cursorActive = true;
+        targetX = event.clientX + 96;
+        targetY = event.clientY + 42;
+        setCursorText(text);
+        cursorPill.classList.add('is-visible');
+      };
+
+      const moveCursorPill = (event) => {
+        if (!cursorActive) return;
+        previousTargetX = targetX;
+        previousTargetY = targetY;
+        targetX = event.clientX + 96;
+        targetY = event.clientY + 42;
+        tiltX = clamp((targetX - previousTargetX) * .34, -13, 13);
+        tiltY = clamp((previousTargetY - targetY) * .28, -10, 10);
+        tiltZ = clamp((targetX - previousTargetX) * .22 + (targetY - previousTargetY) * .08, -15, 15);
+      };
+
+      const hideCursorPill = () => {
+        cursorActive = false;
+        cursorPill.classList.remove('is-visible');
+      };
+
+      document.querySelectorAll('[data-cursor-text]').forEach((item) => {
+        item.addEventListener('pointerenter', (event) => {
+          showCursorPill(event, item.dataset.cursorText);
+        });
+        item.addEventListener('pointermove', moveCursorPill);
+        item.addEventListener('pointerleave', hideCursorPill);
+      });
+
+      const renderCursorPill = () => {
+        cursorX += (targetX - cursorX) * .16;
+        cursorY += (targetY - cursorY) * .16;
+        tiltX += (0 - tiltX) * .045;
+        tiltY += (0 - tiltY) * .045;
+        tiltZ += (0 - tiltZ) * .045;
+        cursorPill.style.left = `${cursorX}px`;
+        cursorPill.style.top = `${cursorY}px`;
+        cursorPill.style.setProperty('--tilt-x', `${tiltX}deg`);
+        cursorPill.style.setProperty('--tilt-y', `${tiltY}deg`);
+        cursorPill.style.setProperty('--tilt-z', `${tiltZ}deg`);
+        requestAnimationFrame(renderCursorPill);
+      };
+
+      renderCursorPill();
 
       document.querySelectorAll('.rail').forEach((rail) => {
         let isDown = false;
@@ -670,8 +842,13 @@
           const dx = event.clientX - startX;
           const dy = event.clientY - startY;
           if (Math.hypot(dx, dy) > 5) didDrag = true;
-          moveX = clamp(baseX + dx, -42, 42);
-          moveY = clamp(baseY + dy, -54, 54);
+          if (matchMedia('(pointer: fine)').matches) {
+            moveX = baseX + dx;
+            moveY = baseY + dy;
+          } else {
+            moveX = clamp(baseX + dx, -42, 42);
+            moveY = clamp(baseY + dy, -54, 54);
+          }
           item.style.translate = `${moveX}px ${moveY}px`;
         });
 
@@ -689,30 +866,6 @@
         item.addEventListener('pointerup', stopHeroDrag);
         item.addEventListener('pointercancel', stopHeroDrag);
       });
-
-      modalImage.addEventListener('pointerdown', (event) => {
-        if (!modal.classList.contains('is-open')) return;
-        modalDrag = true;
-        modalStartX = event.clientX - modalX;
-        modalStartY = event.clientY - modalY;
-        modal.classList.add('is-dragging');
-        modalImage.setPointerCapture(event.pointerId);
-      });
-
-      modalImage.addEventListener('pointermove', (event) => {
-        if (!modalDrag) return;
-        modalX = event.clientX - modalStartX;
-        modalY = event.clientY - modalStartY;
-        modalImage.style.transform = `translate3d(${modalX}px, ${modalY}px, 0) scale(1)`;
-      });
-
-      const stopModalDrag = () => {
-        modalDrag = false;
-        modal.classList.remove('is-dragging');
-      };
-
-      modalImage.addEventListener('pointerup', stopModalDrag);
-      modalImage.addEventListener('pointercancel', stopModalDrag);
 
       const stack = document.querySelector('[data-tilt]');
       stack.addEventListener('pointermove', (event) => {
