@@ -100,7 +100,7 @@
         font-family: "Caveat", "Manrope", system-ui, sans-serif;
         font-size: 66px;
         fill: rgba(255, 255, 255, 0);
-        stroke: #ffffff55;
+        stroke: #ffffff3d;
         stroke-width: 1.6px;
         stroke-linecap: round;
         stroke-linejoin: round;
@@ -111,9 +111,9 @@
 
       .hero {
         display: grid;
-        min-height: 100svh;
+        min-height: 90svh;
         align-items: center;
-        padding: 8px 0 28px;
+        padding: 8px 0 82px;
       }
 
       .hero-stack {
@@ -238,6 +238,7 @@
         display: grid;
         grid-template-columns: 1fr;
         gap: var(--gap);
+            grid-auto-flow: row dense;
       }
 
       .work {
@@ -789,8 +790,11 @@
         <button class="work tall reveal" type="button" data-full="assets/works/13-photo.jpg" data-cursor-text="ФОТО МОКАП / ДЕТАЛИ ПЕЧАТИ / БУМАГА" aria-label="open">
           <img src="assets/works/13-photo.jpg" alt="" loading="lazy">
         </button>
-        <button class="work poster reveal" type="button" data-full="assets/works/14-poster-person.jpg" data-cursor-text="ПЕРСОНАЛЬНЫЙ ПОСТЕР / РЕДАКТОРСКИЙ СТИЛЬ / ПЕЧАТЬ" aria-label="open">
+        <button class="work poster reveal" type="button" data-full="assets/works/14-poster-person.jpg" data-cursor-text="КОРПОРАТИВНЫЙ / ПОСТЕР / ПЕЧАТЬ" aria-label="open">
           <img src="assets/works/14-poster-person.jpg" alt="" loading="lazy">
+        </button>
+         <button class="work poster reveal" type="button" data-full="assets/works/Tech.jpg" data-cursor-text="ПЕРСОНАЛЬНЫЙ ПОСТЕР / РАСПИСАНИЕ / ТИПОГРАФИКА" aria-label="open">
+          <img src="assets/works/Tech.jpg" alt="" loading="lazy">
         </button>
       </section>
 
