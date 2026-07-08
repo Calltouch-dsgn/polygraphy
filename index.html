@@ -583,6 +583,15 @@
         to { transform: translateX(-50%); }
       }
 
+      @media (max-width: 719px) {
+        .rail-card.reveal,
+        .rail-card.reveal.is-visible {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -718,7 +727,7 @@
   <body>
     <main class="page">
       <svg class="hello-mark" viewBox="0 0 260 96" aria-hidden="true">
-        <text x="12" y="48">Привет</text>
+        <text x="12" y="48">Привет!</text>
       </svg>
 
       <section class="hero" aria-label="portfolio">
